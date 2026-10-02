@@ -1,1 +1,77 @@
+# Lista para armazenar o cadastro dos usuários
+usuarios = []
 
+
+def cadastrar_usuario():
+    print("\n--- CADASTRO DE NOVO AMIGO ---")
+    nome = input("Qual é o seu nome? ")
+    cidade = input("Qual cidade você mora? ")
+    print("Digite seus interesses divididos por vírgula (ex: jogos, música, futebol, leitura):")
+    interesses_raw = input("> ")
+
+    # Converte os interesses em uma lista formatada
+    interesses = [item.strip().lower() for item in interesses_raw.split(",")]
+
+    novo_usuario = {
+        "nome": nome,
+        "cidade": cidade,
+        "interesses": set(interesses),  # Usa 'set' para facilitar comparações
+    }
+
+    usuarios.append(novo_usuario)
+    print(f"\nUsuário {nome} cadastrado com sucesso!")
+
+
+def buscar_amigos(nome_busca):
+    # Encontra o perfil da pessoa que está buscando
+    usuario_atual = next(
+        (u for u in usuarios if u["nome"].lower() == nome_busca.lower()), None
+    )
+
+    if not usuario_atual:
+        print(f"\nUsuário '{nome_busca}' não encontrado.")
+        return
+
+    print(f"\n--- AMIGOS RECOMENDADOS PARA {usuario_atual['nome'].upper()} ---")
+    encontrou_combinacao = False
+
+    for usuario in usuarios:
+        # Não compara a pessoa com ela mesma
+        if usuario["nome"].lower() == usuario_atual["nome"].lower():
+            continue
+
+        # Calcula os interesses em comum
+        interesses_comuns = usuario_atual["interesses"].intersection(
+            usuario["interesses"]
+        )
+
+        if interesses_comuns:
+            encontrou_combinacao = True
+            print(f"\nNome: {usuario['nome']} ({usuario['cidade']})")
+            print(
+                f"Interesses em comum: {', '.join(interesses_comuns).title()}"
+            )
+
+    if not encontrou_combinacao:
+        print("\nNenhum amigo encontrado com os mesmos interesses ainda.")
+
+
+# --- MENU PRINCIPAL ---
+while True:
+    print("\n=== PROGRAMA ACHAR AMIGOS ===")
+    print("1. Cadastrar novo perfil")
+    print("2. Buscar amigos em comum")
+    print("3. Sair")
+
+    opcao = input("Escolha uma opção (1-3): ")
+
+    if opcao == "1":
+        cadastrar_usuario()
+    elif opcao == "2":
+        nome = input("Digite o seu nome para buscar combinações: ")
+        buscar_amigos(nome)
+    elif opcao == "3":
+        print("Saindo do programa... Até mais!")
+        break
+    else:
+        print("Opção inválida. Tente novamente.")
